@@ -21,18 +21,17 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
-# def call_history(method: Callable) -> Callable:
-#     """Decorator function to record call hsitory of a function"""
-#     @wraps(method)
-#     def call_history(*args):
-#         """Callback for call history"""
-#         inputlist_key = method.__qualname__ + ":inputs"
-#         outputlist_key = method.__qualname__ + ":outputs"
-#         cache = (args[0])._redis
-#         cache.rpush(inputlist_key, str(args[1]))
-#         output = method(*args)
-#         return cache.rpush(outputlist_key, str(output))
-#     return call_history
+def call_history(method: Callable) -> Callable:
+    """Decorator function to record call hsitory of a function"""
+    @wraps(method)
+    def call_history(*args):
+        """Callback for call history"""
+        inputlist_key = method.__qualname__ + ":inputs"
+        outputlist_key = method.__qualname__ + ":outputs"
+        (args[0])._redis.rpush(inputlist_key, str(args))
+        output = method(*args)
+        return (args[0])._redis.rpush(outputlist_key, str(output))
+    return call_history
 
 
 # def replay(method: Callable):
@@ -57,7 +56,7 @@ class Cache():
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-    # @call_history
+    @call_history
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """Method to store data"""
