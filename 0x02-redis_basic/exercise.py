@@ -16,8 +16,7 @@ def count_calls(method: Callable) -> Callable:
     def wrapper(self, *args, **kwargs):
         """"Callback function"""
         key = method.__qualname__
-        cache = self._redis
-        cache.incr(key)
+        self._redis.incr(key)
         return method
     return wrapper
 
