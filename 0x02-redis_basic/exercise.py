@@ -10,16 +10,16 @@ from typing import Callable, Tuple, Union
 import requests
 
 
-# def count_calls(method: Callable) -> Callable:
-#     """decorator function to count how many times a function is called"""
-#     @wraps(method)
-#     def wrapper(self, *args, **kwargs):
-#         """"Callback function"""
-#         key = method.__qualname__
-#         cache = self._redis
-#         cache.incr(key)
-#         return method
-#     return wrapper
+def count_calls(method: Callable) -> Callable:
+    """decorator function to count how many times a function is called"""
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """"Callback function"""
+        key = method.__qualname__
+        cache = self._redis
+        cache.incr(key)
+        return method
+    return wrapper
 
 
 # def call_history(method: Callable) -> Callable:
@@ -30,10 +30,9 @@ import requests
 #         inputlist_key = method.__qualname__ + ":inputs"
 #         outputlist_key = method.__qualname__ + ":outputs"
 #         cache = (args[0])._redis
-#         cache.rpush(inputlist_key, args[1])
+#         cache.rpush(inputlist_key, str(args[1]))
 #         output = method(*args)
-#         cache.rpush(outputlist_key, output)
-#         return output
+#         return cache.rpush(outputlist_key, str(output))
 #     return call_history
 
 
@@ -59,8 +58,8 @@ class Cache():
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-    #@call_history
-    #@count_calls
+    # @call_history
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """Method to store data"""
         key = str(uuid.uuid4())
